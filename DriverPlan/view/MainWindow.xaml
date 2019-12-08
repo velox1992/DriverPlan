@@ -16,8 +16,8 @@
             <MenuItem Header="Speichern" Command="{Binding SavePlanCommand}" />
         </Menu>
         <Grid>
-            <DockPanel>
-                <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+            <StackPanel>
+                <StackPanel Orientation="Vertical">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -45,8 +45,10 @@
                         <DataGridTextColumn Header="Notiz" Binding="{Binding Note}" />
                     </DataGrid.Columns>
                 </DataGrid>
+                <ListView ItemsSource="{Binding Report}">
+                </ListView>
 
-            </DockPanel>
+            </StackPanel>
 
         </Grid>
     </DockPanel>

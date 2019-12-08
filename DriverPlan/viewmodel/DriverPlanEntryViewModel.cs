@@ -26,5 +26,11 @@ namespace DriverPlan.viewmodel
             get => FItem.Note;
             set => FItem.Note = value;
         }
+
+        public DateTime DeliveryDate
+        {
+            get => FItem.DeliveryTime;
+            set => FItem.DeliveryTime = value;
+        }
     }
 }

@@ -16,6 +16,8 @@ namespace DriverPlan.viewmodel
     {
         private ObservableCollection<DriverPlanEntryViewModel> FDriverPlanEntries;
 
+        private ObservableCollection<string> FReport;
+
         // ToDo: Edit auslagern
         public string NewItemName { get; set; }
 
@@ -26,6 +28,7 @@ namespace DriverPlan.viewmodel
         public MainWindowViewModel()
         {
             FDriverPlanEntries = new ObservableCollection<DriverPlanEntryViewModel>();
+            FReport = new ObservableCollection<string>();
 
             CreateNewPlanCommand = new RelayCommand(
                 (_Parameter) =>
@@ -99,7 +102,12 @@ namespace DriverPlan.viewmodel
                 DriverPlanEntries.Add(hNewDriverPlanEntryViewModel);
             });
 
-            
+            Report.Clear();
+            var hReport = ReportGenerator.CreateReport(DriverPlanEntries);
+            foreach (var hReportEntry in hReport)
+            {
+                Report.Add(hReportEntry);
+            }
         }
 
 
@@ -119,6 +127,22 @@ namespace DriverPlan.viewmodel
             }
         }
 
+        public ObservableCollection<string> Report
+        {
+            get => FReport;
+            set
+            {
+                if (FReport.Equals(value))
+                {
+                    return;
+                }
+
+                FReport = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         private DataRepository DataRepository { get; set; }
 
         public RelayCommand LoadPlanCommand { get; }
@@ -126,7 +150,7 @@ namespace DriverPlan.viewmodel
         public RelayCommand AddNewItemCommand { get; }
     }
 
-    internal class BaseViewModel : INotifyPropertyChanged
+    public class BaseViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
