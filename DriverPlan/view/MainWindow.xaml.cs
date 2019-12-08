@@ -44,11 +44,7 @@ namespace DriverPlan
           var hExporter = new JsonExporter(cFilePath);
           hExporter.ExportData(hDriverInfos);
           */
-
-            const string cFilePath = @"e:\Privat\Temp\DriverTemp.json";
-
-            var hImporter = new JsonImporter(cFilePath);
-            var hDriverInfos = hImporter.GetData();
+          
 
         }
     }

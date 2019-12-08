@@ -10,6 +10,10 @@
         <viewmodel:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
-        <TextBlock Text="{Binding HelloBinding}"></TextBlock>
+        <StackPanel>
+            <TextBlock Text="{Binding HelloBinding}" />
+            <Button Command="{Binding OpenDataSetCommand}" Content="Datenstand laden" />
+            <DataGrid AutoGenerateColumns="True" ItemsSource="{Binding DriverPlanEntries}" Height="200"></DataGrid>
+        </StackPanel>
     </Grid>
 </Window>

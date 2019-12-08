@@ -5,8 +5,13 @@ using System.Text;
 
 namespace DriverPlan.model
 {
+
+    
+
     internal interface IImporter
     {
+        bool IsValid();
+
         List<DriverInfo> GetData();
     }
 
@@ -18,6 +23,11 @@ namespace DriverPlan.model
         }
 
         public string FilePath { get; }
+
+        public bool IsValid()
+        {
+            return File.Exists(FilePath);
+        }
 
         public List<DriverInfo> GetData()
         {
