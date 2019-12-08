@@ -15,12 +15,16 @@ namespace DriverPlan.viewmodel
             FItem = _FItem;
         }
 
-        public string Driver => FItem.Driver;
+        public string Driver
+        {
+            get => FItem.Driver;
+            set => FItem.Driver = value;
+        }
 
-        public DateTime DeliveryTime => FItem.DeliveryTime;
-
-        public string DeliveryLocation => FItem.DeliveryLocation;
-
-        public string Note => FItem.Note;
+        public string Note
+        {
+            get => FItem.Note;
+            set => FItem.Note = value;
+        }
     }
 }

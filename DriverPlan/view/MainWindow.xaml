@@ -10,10 +10,39 @@
         <viewmodel:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
-        <StackPanel>
-            <TextBlock Text="{Binding HelloBinding}" />
-            <Button Command="{Binding OpenDataSetCommand}" Content="Datenstand laden" />
-            <DataGrid AutoGenerateColumns="True" ItemsSource="{Binding DriverPlanEntries}" Height="200"></DataGrid>
-        </StackPanel>
+        <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="{Binding HelloBinding}" />
+            <Button DockPanel.Dock="Top" Command="{Binding OpenDataSetCommand}" Content="Datenstand laden" />
+            
+            <StackPanel DockPanel.Dock="Top" Orientation="Vertical">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Fahrer"></Label>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewItemName, Mode=TwoWay}"></TextBox>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Notiz"></Label>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewItemNote, Mode=TwoWay}"></TextBox>
+                    <Label Grid.Row="2" Grid.Column="0" Content="Datum"></Label>
+                    <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding NewItemDate, Mode=TwoWay}"></DatePicker>
+                </Grid>
+                <Button Command="{Binding AddNewItemCommand}"  Content="Add"></Button>
+            </StackPanel>
+            <DataGrid AutoGenerateColumns="False" ColumnWidth="*" VerticalScrollBarVisibility="Visible" ItemsSource="{Binding DriverPlanEntries}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Fahrer" Binding="{Binding Driver}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Notiz" Binding="{Binding Note}"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </DockPanel>
+
     </Grid>
 </Window>

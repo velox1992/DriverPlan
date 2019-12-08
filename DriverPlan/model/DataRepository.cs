@@ -27,5 +27,12 @@ namespace DriverPlan.model
         {
             DataChanged?.Invoke(this, EventArgs.Empty);
         }
+
+        public void AddNewItem(DriverInfo _DriverInfo)
+        {
+            DriverInfos.Add(_DriverInfo);
+            OnDataChanged();
+            
+        }
     }
 }

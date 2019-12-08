@@ -16,6 +16,13 @@ namespace DriverPlan.viewmodel
     {
         private ObservableCollection<DriverPlanEntryViewModel> FDriverPlanEntries;
 
+        // ToDo: Edit auslagern
+        public string NewItemName { get; set; }
+
+        public string NewItemNote { get; set; }
+
+        public DateTime NewItemDate { get; set; }
+
         public MainWindowViewModel()
         {
             FDriverPlanEntries = new ObservableCollection<DriverPlanEntryViewModel>();
@@ -37,6 +44,18 @@ namespace DriverPlan.viewmodel
                     DataRepository.Initialize(hImporter);
                 },
                 _Parameter => true );
+
+            AddNewItemCommand = new RelayCommand(
+                (_Parameter) =>
+                {
+                    var hNewDriverInfo = new DriverInfo()
+                    {
+                        Driver = NewItemName,
+                        Note = NewItemNote
+                    };
+                   DataRepository?.AddNewItem(hNewDriverInfo);
+                },
+                _Parameter => true);
         }
 
         private void DataRepositoryOnDataChanged(object _Sender, EventArgs _E)
@@ -73,8 +92,7 @@ namespace DriverPlan.viewmodel
 
         public RelayCommand OpenDataSetCommand { get; }
 
-       
-
+        public RelayCommand AddNewItemCommand { get; }
     }
 
     internal class BaseViewModel : INotifyPropertyChanged
@@ -89,3 +107,4 @@ namespace DriverPlan.viewmodel
 
     }
 }
+
