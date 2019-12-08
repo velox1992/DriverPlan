@@ -27,7 +27,15 @@ namespace DriverPlan.viewmodel
         {
             FDriverPlanEntries = new ObservableCollection<DriverPlanEntryViewModel>();
 
-            OpenDataSetCommand = new RelayCommand(
+            CreateNewPlanCommand = new RelayCommand(
+                (_Parameter) =>
+                {
+                    DataRepository = new DataRepository();
+                    DataRepository.DataChanged += DataRepositoryOnDataChanged;
+                },
+                _Parameter => true);
+
+            LoadPlanCommand = new RelayCommand(
                 (_Parameter) =>
                 {
                     var hOpenFileDialog = new OpenFileDialog();
@@ -45,6 +53,25 @@ namespace DriverPlan.viewmodel
                 },
                 _Parameter => true );
 
+            SavePlanCommand = new RelayCommand(
+                (_Parameter) =>
+                {
+                    if (DataRepository is null) return;
+
+                    var hSaveFileDialog = new SaveFileDialog();
+                    var hDialogResult = hSaveFileDialog.ShowDialog();
+
+                    if (!hDialogResult.GetValueOrDefault()) return;
+
+                    var hFileName = hSaveFileDialog.FileName;
+
+                    var hExporter = new JsonExporter(hFileName);
+                    DataRepository.SaveData(hExporter);
+
+
+                },
+                _Parameter => true);
+
             AddNewItemCommand = new RelayCommand(
                 (_Parameter) =>
                 {
@@ -57,6 +84,10 @@ namespace DriverPlan.viewmodel
                 },
                 _Parameter => true);
         }
+
+        public RelayCommand SavePlanCommand { get; set; }
+
+        public RelayCommand CreateNewPlanCommand { get; set; }
 
         private void DataRepositoryOnDataChanged(object _Sender, EventArgs _E)
         {
@@ -90,7 +121,7 @@ namespace DriverPlan.viewmodel
 
         private DataRepository DataRepository { get; set; }
 
-        public RelayCommand OpenDataSetCommand { get; }
+        public RelayCommand LoadPlanCommand { get; }
 
         public RelayCommand AddNewItemCommand { get; }
     }

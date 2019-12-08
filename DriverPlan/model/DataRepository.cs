@@ -6,6 +6,11 @@ namespace DriverPlan.model
 {
     class DataRepository
     {
+        public DataRepository()
+        {
+            DriverInfos = new List<DriverInfo>();
+        }
+
         public List<DriverInfo> DriverInfos { get; private set; }
 
         public event EventHandler DataChanged;
