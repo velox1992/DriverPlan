@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="view\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Page Include="App.xaml" />
   </ItemGroup>
 
