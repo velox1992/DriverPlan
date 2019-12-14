@@ -26,26 +26,6 @@ namespace DriverPlan
         public MainWindow()
         {
             InitializeComponent();
-
-            /*
-          var hDriverInfos = new List<DriverInfo>()
-          {
-              new DriverInfo()
-              {
-                  DeliveryLocation = "Kesternich",
-                  DeliveryTime = DateTime.Now,
-                  Driver = "Georg",
-                  Note = "Links am Haus vorbei"
-              }
-          };
-
-
-
-          var hExporter = new JsonExporter(cFilePath);
-          hExporter.ExportData(hDriverInfos);
-          */
-          
-
         }
     }
 }

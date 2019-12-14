@@ -15,6 +15,7 @@ namespace DriverPlan.model
         List<DriverInfo> GetData();
     }
 
+    
     internal class JsonImporter : IImporter
     {
         public JsonImporter(string _FilePath)
@@ -36,6 +37,20 @@ namespace DriverPlan.model
             using var hFile = File.OpenText(FilePath);
             var hSerializer = new Newtonsoft.Json.JsonSerializer();
             return (List<DriverInfo>)hSerializer.Deserialize(hFile, typeof(List<DriverInfo>));
+        }
+    }
+
+
+    internal class TestDataImporter : IImporter
+    {
+        public bool IsValid()
+        {
+            return true;
+        }
+
+        public List<DriverInfo> GetData()
+        {
+            return TestDataGenerator.CreateDriverInfo();
         }
     }
 }

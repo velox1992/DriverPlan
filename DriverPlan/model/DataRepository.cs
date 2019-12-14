@@ -20,6 +20,13 @@ namespace DriverPlan.model
             if (!_Importer.IsValid()) return;
 
             DriverInfos = _Importer.GetData();
+            DriverInfos.ForEach(_ => _.PropertyChanged += OnItemChanged);
+
+            OnDataChanged();
+        }
+
+        private void OnItemChanged(object? _Sender, EventArgs _E)
+        {
             OnDataChanged();
         }
 
@@ -35,6 +42,7 @@ namespace DriverPlan.model
 
         public void AddNewItem(DriverInfo _DriverInfo)
         {
+            _DriverInfo.PropertyChanged += OnItemChanged;
             DriverInfos.Add(_DriverInfo);
             OnDataChanged();
             
