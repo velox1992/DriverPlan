@@ -4,12 +4,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodel="clr-namespace:DriverPlan.viewmodel"
-        xmlns:view="clr-namespace:DriverPlan.view"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.DataContext>
         <viewmodel:MainWindowViewModel />
     </Window.DataContext>
+    <Window.Resources>
+        <DataTemplate x:Key="DriverPlanEntryTemplate" DataType="viewmodel:DriverPlanEntryViewModel">
+            <Border Background="Aqua" BorderBrush="Gray" BorderThickness="1" Padding="2">
+                <StackPanel>
+                    <WrapPanel>
+                        <Label Content="{Binding DeliveryDate}" />
+                        <Label Content="{Binding Driver}" />
+                    </WrapPanel>
+                    <Label Content="{Binding Note}" />
+                </StackPanel>
+
+            </Border>
+        </DataTemplate>
+
+
+    </Window.Resources>
+
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Neu" Command="{Binding CreateNewPlanCommand}" />
@@ -43,12 +59,49 @@
                           ItemsSource="{Binding DriverPlanEntries}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Fahrer" Binding="{Binding Driver}" />
+                        <DataGridTextColumn Header="Datum" Binding="{Binding DeliveryDate}" />
                         <DataGridTextColumn Header="Notiz" Binding="{Binding Note}" />
                     </DataGrid.Columns>
                 </DataGrid>
-                <ListView ItemsSource="{Binding Report}">
-                </ListView>
-               
+
+                <ItemsControl ItemsSource="{Binding TodaysDriverPlan}">
+
+                    <!-- This panel will be used to hold the items -->
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <!-- Each item will be drawn using this template -->
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            
+                            <Border BorderBrush="Black" BorderThickness="0.1">
+                                <StackPanel Orientation="Horizontal">
+
+
+                                    <!-- Stunde -->
+                                    <Border Width="30" Background="LightGreen">
+                                        <Label Content="{Binding Key}" />
+                                    </Border>
+                                    <!-- Einträge -->
+                                    <ItemsControl ItemsSource="{Binding Value}"
+                                                  ItemTemplate="{StaticResource DriverPlanEntryTemplate}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                    </ItemsControl>
+
+                                </StackPanel>
+                            </Border>
+
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
 
             </StackPanel>
 
