@@ -101,7 +101,9 @@ namespace DriverPlan.viewmodel
 
         public string NewItemNote { get; set; }
 
-        public DateTime NewItemDate { get; set; }
+        public DateTime NewItemDate { get; set; } = DateTime.Today;
+
+        public string NewItemLocation { get; set; }
 
         public RelayCommand SavePlanCommand { get; set; }
 
@@ -154,6 +156,9 @@ namespace DriverPlan.viewmodel
         private void GenerateDriverPlan()
         {
             AllDriverPlans.Clear();
+
+            var hFirstEntryHour = DriverPlanEntries.Min(_ => _.DeliveryDate.Hour);
+            var hLastEntryHour = DriverPlanEntries.Max(_ => _.DeliveryDate.Hour);
 
             var hDriverPlansByDay = new Dictionary<DateTime, List<DriverPlanEntryViewModel>>();
 

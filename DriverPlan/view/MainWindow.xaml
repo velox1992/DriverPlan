@@ -14,21 +14,22 @@
             <Border Background="Aqua" BorderBrush="Gray" BorderThickness="1" Padding="2">
                 <StackPanel>
                     <WrapPanel>
-                        <Label Content="{Binding DeliveryDate}" />
-                        <Label Content="{Binding Driver}" />
+                        <TextBlock Text="{Binding DeliveryDate, StringFormat=hh:mm}" />
+                        <TextBlock Text="{Binding Driver}" Margin="10,0,0,0" />
                     </WrapPanel>
-                    <Label Content="{Binding Note}" />
+                    <TextBlock Text="{Binding DeliveryLocation}" />
+                    <TextBlock Text="{Binding Note}" />
                 </StackPanel>
 
             </Border>
         </DataTemplate>
 
         <DataTemplate x:Key="DriverPlanEntriesOfDay" DataType="viewmodel:DriverPlanDayViewModel">
-            
+
             <ItemsControl ItemsSource="{Binding DriverPlanByHour}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical"></StackPanel>
+                        <StackPanel Orientation="Vertical" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
@@ -56,7 +57,6 @@
 
             </ItemsControl>
 
-           
 
         </DataTemplate>
 
@@ -83,12 +83,15 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Content="Fahrer" />
-                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewItemName, Mode=TwoWay}" />
-                        <Label Grid.Row="1" Grid.Column="0" Content="Notiz" />
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewItemNote, Mode=TwoWay}" />
-                        <Label Grid.Row="2" Grid.Column="0" Content="Datum" />
-                        <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding NewItemDate, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Datum" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewItemDate, StringFormat=dd.MM.yyyy hh:mm}" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Ort" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewItemLocation, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Fahrer" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewItemName, Mode=TwoWay}" />
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Notiz" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding NewItemNote, Mode=TwoWay}" />
+
                     </Grid>
                     <Button Command="{Binding AddNewItemCommand}" Content="Add" />
                 </StackPanel>
@@ -96,7 +99,15 @@
                           ItemsSource="{Binding DriverPlanEntries}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Fahrer" Binding="{Binding Driver}" />
-                        <DataGridTextColumn Header="Datum" Binding="{Binding DeliveryDate}" />
+
+                        <DataGridTemplateColumn Header="Datum">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DeliveryDate, StringFormat=dd.MM.yyyy hh:mm}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Ort" Binding="{Binding DeliveryLocation}" />
                         <DataGridTextColumn Header="Notiz" Binding="{Binding Note}" />
                     </DataGrid.Columns>
                 </DataGrid>
@@ -116,7 +127,7 @@
 
                             <Border BorderBrush="Black" BorderThickness="0.1">
                                 <StackPanel>
-                                    <Label Content="{Binding Key}" />
+                                    <TextBlock Text="{Binding Path=Key, StringFormat=ddd dd.MM.yyyy}" />
                                     <ContentPresenter ContentTemplate="{StaticResource DriverPlanEntriesOfDay}"
                                                       Content="{Binding Value}" />
 

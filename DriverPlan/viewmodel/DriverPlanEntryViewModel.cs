@@ -33,5 +33,11 @@ namespace DriverPlan.viewmodel
             get => FItem.DeliveryTime;
             set => FItem.DeliveryTime = value;
         }
+
+        public string DeliveryLocation
+        {
+            get => FItem.DeliveryLocation;
+            set => FItem.DeliveryLocation = value;
+        }
     }
 }
