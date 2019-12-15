@@ -60,11 +60,18 @@ namespace DriverPlan
                 },
                 new DriverInfo
                 {
-                DeliveryLocation = "Strauch",
-                DeliveryTime = DateTime.Now,
-                Driver = "Peter",
-                Note = "Garten"
-            }
+                    DeliveryLocation = "Strauch",
+                    DeliveryTime = DateTime.Now,
+                    Driver = "Peter",
+                    Note = "Garten"
+                },
+                new DriverInfo
+                {
+                    DeliveryLocation = "Strauch",
+                    DeliveryTime = DateTime.Now - TimeSpan.FromDays(2),
+                    Driver = "Peter",
+                    Note = "Garten"
+                }
             };
         }
     }

@@ -4,56 +4,29 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Windows.Documents;
 using DriverPlan.Annotations;
 using DriverPlan.Command;
 using DriverPlan.model;
 using Microsoft.Win32;
 
-
 namespace DriverPlan.viewmodel
 {
-    internal class MainWindowViewModel : BaseViewModel
+    class MainWindowViewModel : BaseViewModel
     {
+        private Dictionary<DateTime, DriverPlanDayViewModel> FAllDriverPlans;
         private ObservableCollection<DriverPlanEntryViewModel> FDriverPlanEntries;
-
-
-        private Dictionary<int, List<DriverPlanEntryViewModel>> FTodaysDriverPlan;
-
-        public Dictionary<int, List<DriverPlanEntryViewModel>> TodaysDriverPlan
-        {
-            get => FTodaysDriverPlan;
-            set
-            {
-                if (FTodaysDriverPlan.Equals(value))
-                {
-                    return;
-                }
-
-                FTodaysDriverPlan = value;
-                OnPropertyChanged();
-            }
-        }
-
-
-        // ToDo: Edit auslagern
-        public string NewItemName { get; set; }
-
-        public string NewItemNote { get; set; }
-
-        public DateTime NewItemDate { get; set; }
 
         public MainWindowViewModel()
         {
+            FAllDriverPlans = new Dictionary<DateTime, DriverPlanDayViewModel>();
             FDriverPlanEntries = new ObservableCollection<DriverPlanEntryViewModel>();
-            FTodaysDriverPlan = new Dictionary<int, List<DriverPlanEntryViewModel>>();
+
 
             InitializeWithTestData();
 
 
             CreateNewPlanCommand = new RelayCommand(
-                (_Parameter) =>
+                _Parameter =>
                 {
                     DataRepository = new DataRepository();
                     DataRepository.DataChanged += DataRepositoryOnDataChanged;
@@ -61,7 +34,7 @@ namespace DriverPlan.viewmodel
                 _Parameter => true);
 
             LoadPlanCommand = new RelayCommand(
-                (_Parameter) =>
+                _Parameter =>
                 {
                     var hOpenFileDialog = new OpenFileDialog();
                     var hDialogResult = hOpenFileDialog.ShowDialog();
@@ -79,7 +52,7 @@ namespace DriverPlan.viewmodel
                 _Parameter => true);
 
             SavePlanCommand = new RelayCommand(
-                (_Parameter) =>
+                _Parameter =>
                 {
                     if (DataRepository is null) return;
 
@@ -92,15 +65,13 @@ namespace DriverPlan.viewmodel
 
                     var hExporter = new JsonExporter(hFileName);
                     DataRepository.SaveData(hExporter);
-
-
                 },
                 _Parameter => true);
 
             AddNewItemCommand = new RelayCommand(
-                (_Parameter) =>
+                _Parameter =>
                 {
-                    var hNewDriverInfo = new DriverInfo()
+                    var hNewDriverInfo = new DriverInfo
                     {
                         Driver = NewItemName,
                         Note = NewItemNote
@@ -110,6 +81,53 @@ namespace DriverPlan.viewmodel
                 _Parameter => true);
         }
 
+   
+
+        public Dictionary<DateTime, DriverPlanDayViewModel> AllDriverPlans
+        {
+            get => FAllDriverPlans;
+            set
+            {
+                if (FAllDriverPlans.Equals(value)) return;
+
+                FAllDriverPlans = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        // ToDo: Edit auslagern
+        public string NewItemName { get; set; }
+
+        public string NewItemNote { get; set; }
+
+        public DateTime NewItemDate { get; set; }
+
+        public RelayCommand SavePlanCommand { get; set; }
+
+        public RelayCommand CreateNewPlanCommand { get; set; }
+
+
+        public ObservableCollection<DriverPlanEntryViewModel> DriverPlanEntries
+        {
+            get => FDriverPlanEntries;
+            set
+            {
+                if (FDriverPlanEntries.Equals(value)) return;
+
+                FDriverPlanEntries = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+
+        private DataRepository DataRepository { get; set; }
+
+        public RelayCommand LoadPlanCommand { get; }
+
+        public RelayCommand AddNewItemCommand { get; }
+
         private void InitializeWithTestData()
         {
             DataRepository = new DataRepository();
@@ -118,10 +136,6 @@ namespace DriverPlan.viewmodel
             var hImporter = new TestDataImporter();
             DataRepository.Initialize(hImporter);
         }
-
-        public RelayCommand SavePlanCommand { get; set; }
-
-        public RelayCommand CreateNewPlanCommand { get; set; }
 
         private void DataRepositoryOnDataChanged(object _Sender, EventArgs _E)
         {
@@ -133,63 +147,38 @@ namespace DriverPlan.viewmodel
                 DriverPlanEntries.Add(hNewDriverPlanEntryViewModel);
             });
 
-            GenerateTimeSlots();
-
-            OnPropertyChanged(nameof(FTodaysDriverPlan));
-            OnPropertyChanged(nameof(DriverPlanEntries));
+            GenerateDriverPlan();
         }
 
 
-        public ObservableCollection<DriverPlanEntryViewModel> DriverPlanEntries
+        private void GenerateDriverPlan()
         {
-            get => FDriverPlanEntries;
-            set
-            {
-                if (FDriverPlanEntries.Equals(value))
-                {
-                    return;
-                }
+            AllDriverPlans.Clear();
 
-                FDriverPlanEntries = value;
+            var hDriverPlansByDay = new Dictionary<DateTime, List<DriverPlanEntryViewModel>>();
 
-                OnPropertyChanged();
-            }
-        }
-
-
-
-        private DataRepository DataRepository { get; set; }
-
-        public RelayCommand LoadPlanCommand { get; }
-
-        public RelayCommand AddNewItemCommand { get; }
-
-
-
-        private void GenerateTimeSlots()
-        {
-            var hFirstEntryHour =
-                DriverPlanEntries.Min(_ => _.DeliveryDate.Hour);
-
-            var hLatestEntryHour =
-                DriverPlanEntries.Max(_ => _.DeliveryDate.Hour);
-            
-            FTodaysDriverPlan = new Dictionary<int, List<DriverPlanEntryViewModel>>();
-
-            // Erstellen der Struktur
-            for (var hHour = hFirstEntryHour; hHour <= hLatestEntryHour; hHour++)
-            {
-                FTodaysDriverPlan.Add(hHour, new List<DriverPlanEntryViewModel>());
-            }
-
-            // Einsortieren der Fahrten
             foreach (var hDriverPlanEntryViewModel in DriverPlanEntries)
             {
-                var hDeliveryDate = hDriverPlanEntryViewModel.DeliveryDate.Hour;
-                FTodaysDriverPlan[hDeliveryDate].Add(hDriverPlanEntryViewModel);
+                var hDeliveryDate = hDriverPlanEntryViewModel.DeliveryDate.Date;
+                if (hDriverPlansByDay.ContainsKey(hDeliveryDate))
+                {
+                    hDriverPlansByDay[hDeliveryDate].Add(hDriverPlanEntryViewModel);
+                }
+                else
+                {
+                    hDriverPlansByDay.Add(hDeliveryDate, new List<DriverPlanEntryViewModel> { hDriverPlanEntryViewModel });
+                }
             }
-        }
 
+            foreach (var hDriverPlanDay in hDriverPlansByDay)
+            {
+                AllDriverPlans.Add(hDriverPlanDay.Key, new DriverPlanDayViewModel(hDriverPlanDay.Value));
+            }
+
+
+
+            OnPropertyChanged(nameof(AllDriverPlans));
+        }
     }
 
 
@@ -202,7 +191,5 @@ namespace DriverPlan.viewmodel
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(_PropertyName));
         }
-
     }
 }
-

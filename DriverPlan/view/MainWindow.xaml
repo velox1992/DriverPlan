@@ -23,6 +23,43 @@
             </Border>
         </DataTemplate>
 
+        <DataTemplate x:Key="DriverPlanEntriesOfDay" DataType="viewmodel:DriverPlanDayViewModel">
+            
+            <ItemsControl ItemsSource="{Binding DriverPlanByHour}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"></StackPanel>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="Black" BorderThickness="0.1">
+                            <StackPanel Orientation="Horizontal">
+                                <!-- Stunde -->
+                                <Border Width="30">
+                                    <Label Content="{Binding Key}" />
+                                </Border>
+                                <!-- Einträge -->
+                                <ItemsControl ItemsSource="{Binding Value}"
+                                              ItemTemplate="{StaticResource DriverPlanEntryTemplate}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+
+           
+
+        </DataTemplate>
+
 
     </Window.Resources>
 
@@ -64,44 +101,32 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <ItemsControl ItemsSource="{Binding TodaysDriverPlan}">
 
-                    <!-- This panel will be used to hold the items -->
+                <ItemsControl ItemsSource="{Binding AllDriverPlans}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical" />
+                            <StackPanel Orientation="Horizontal" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
-                    <!-- Each item will be drawn using this template -->
                     <ItemsControl.ItemTemplate>
+
+
                         <DataTemplate>
-                            
+
                             <Border BorderBrush="Black" BorderThickness="0.1">
-                                <StackPanel Orientation="Horizontal">
-
-
-                                    <!-- Stunde -->
-                                    <Border Width="30" Background="LightGreen">
-                                        <Label Content="{Binding Key}" />
-                                    </Border>
-                                    <!-- Einträge -->
-                                    <ItemsControl ItemsSource="{Binding Value}"
-                                                  ItemTemplate="{StaticResource DriverPlanEntryTemplate}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <StackPanel Orientation="Horizontal" />
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                    </ItemsControl>
+                                <StackPanel>
+                                    <Label Content="{Binding Key}" />
+                                    <ContentPresenter ContentTemplate="{StaticResource DriverPlanEntriesOfDay}"
+                                                      Content="{Binding Value}" />
 
                                 </StackPanel>
                             </Border>
 
                         </DataTemplate>
+
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-
 
             </StackPanel>
 
