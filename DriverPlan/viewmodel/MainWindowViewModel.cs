@@ -79,9 +79,16 @@ namespace DriverPlan.viewmodel
                     DataRepository?.AddNewItem(hNewDriverInfo);
                 },
                 _Parameter => true);
+
+            DeleteItemCommand = new RelayCommand(
+                _Parameter =>
+                {
+                    Console.WriteLine("Test");
+                }, _Parameter => true);
         }
 
-   
+        public RelayCommand DeleteItemCommand { get; set; }
+
 
         public Dictionary<DateTime, DriverPlanDayViewModel> AllDriverPlans
         {
@@ -149,14 +156,14 @@ namespace DriverPlan.viewmodel
                 DriverPlanEntries.Add(hNewDriverPlanEntryViewModel);
             });
 
-            GenerateDriverPlan();
+            AllDriverPlans = GenerateDriverPlan();
         }
 
 
-        private void GenerateDriverPlan()
+        private Dictionary<DateTime, DriverPlanDayViewModel> GenerateDriverPlan()
         {
-            AllDriverPlans.Clear();
-
+            var hAllDriverPlans = new Dictionary<DateTime, DriverPlanDayViewModel>();
+            
             var hFirstEntryHour = DriverPlanEntries.Min(_ => _.DeliveryDate.Hour);
             var hLastEntryHour = DriverPlanEntries.Max(_ => _.DeliveryDate.Hour);
 
@@ -177,12 +184,10 @@ namespace DriverPlan.viewmodel
 
             foreach (var hDriverPlanDay in hDriverPlansByDay)
             {
-                AllDriverPlans.Add(hDriverPlanDay.Key, new DriverPlanDayViewModel(hDriverPlanDay.Value));
+                hAllDriverPlans.Add(hDriverPlanDay.Key, new DriverPlanDayViewModel(hDriverPlanDay.Value));
             }
 
-
-
-            OnPropertyChanged(nameof(AllDriverPlans));
+            return hAllDriverPlans;
         }
     }
 

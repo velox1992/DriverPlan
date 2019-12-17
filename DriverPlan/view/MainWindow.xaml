@@ -72,7 +72,8 @@
         <Grid>
             <StackPanel>
                 <StackPanel Orientation="Vertical">
-                    <Grid>
+                    <Border>
+                        <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -93,10 +94,13 @@
                         <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding NewItemNote, Mode=TwoWay}" />
 
                     </Grid>
+                    </Border>
                     <Button Command="{Binding AddNewItemCommand}" Content="Add" />
+                  
+
                 </StackPanel>
                 <DataGrid AutoGenerateColumns="False" ColumnWidth="*" VerticalScrollBarVisibility="Visible"
-                          ItemsSource="{Binding DriverPlanEntries}">
+                          ItemsSource="{Binding DriverPlanEntries}" CanUserDeleteRows="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Fahrer" Binding="{Binding Driver}" />
 
@@ -108,7 +112,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Ort" Binding="{Binding DeliveryLocation}" />
-                        <DataGridTextColumn Header="Notiz" Binding="{Binding Note}" />
+                        <DataGridTextColumn Header="Notiz" Binding="{Binding Note}"/>
                     </DataGrid.Columns>
                 </DataGrid>
 
