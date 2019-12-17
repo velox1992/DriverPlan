@@ -60,10 +60,10 @@ namespace DriverPlan
                 },
                 new DriverInfo
                 {
-                    DeliveryLocation = "Strauch",
+                    DeliveryLocation = "Max Mustermann, Gartenstraße, 52152 Strauch",
                     DeliveryTime = DateTime.Now,
                     Driver = "Peter",
-                    Note = "Garten"
+                    Note = "Das hier ist jetzt eine etwas längere Notiz"
                 },
                 new DriverInfo
                 {
