@@ -39,5 +39,52 @@ namespace DriverPlan.viewmodel
             get => FItem.DeliveryLocation;
             set => FItem.DeliveryLocation = value;
         }
+
+        public int DeliveryDateDay
+        {
+            get => DeliveryDate.Day;
+            set => DeliveryDate = new DateTime(DeliveryDate.Year, DeliveryDate.Month, value, DeliveryDate.Hour, DeliveryDate.Minute, 0);
+        }
+
+        public int DeliveryDateMonth
+        {
+            get => DeliveryDate.Month;
+            set => DeliveryDate = new DateTime(DeliveryDate.Year, value, DeliveryDate.Day, DeliveryDate.Hour, DeliveryDate.Minute, 0);
+        }
+
+        public int DeliveryDateYear
+        {
+            get => DeliveryDate.Year;
+            set => DeliveryDate = new DateTime(value, DeliveryDate.Month, DeliveryDate.Day , DeliveryDate.Hour, DeliveryDate.Minute, 0);
+        }
+
+        public int DeliveryDateHour
+        {
+            get => DeliveryDate.Hour;
+            set
+            {
+                if (value < 0 || value > 23)
+                {
+                    return;
+                }
+
+                DeliveryDate = new DateTime(DeliveryDate.Year, DeliveryDate.Month, DeliveryDate.Day, value,
+                    DeliveryDate.Minute, 0);
+            }
+        }
+
+        public int DeliveryDateMinute
+        {
+            get => DeliveryDate.Minute;
+            set
+            {
+                if (value < 0 || value > 59)
+                {
+                    return;
+                }
+                DeliveryDate = new DateTime(DeliveryDate.Year, DeliveryDate.Month, DeliveryDate.Day, DeliveryDate.Hour,
+                    value, 0);
+            }
+        }
     }
 }

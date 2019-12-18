@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,12 +14,13 @@ namespace DriverPlan.viewmodel
 {
     class MainWindowViewModel : BaseViewModel
     {
-        private Dictionary<DateTime, DriverPlanDayViewModel> FAllDriverPlans;
+        private SortedDictionary<DateTime, DriverPlanDayViewModel> FAllDriverPlans;
         private ObservableCollection<DriverPlanEntryViewModel> FDriverPlanEntries;
+        private int FNewItemHour;
 
         public MainWindowViewModel()
         {
-            FAllDriverPlans = new Dictionary<DateTime, DriverPlanDayViewModel>();
+            FAllDriverPlans = new SortedDictionary<DateTime, DriverPlanDayViewModel>();
             FDriverPlanEntries = new ObservableCollection<DriverPlanEntryViewModel>();
 
 
@@ -73,6 +75,8 @@ namespace DriverPlan.viewmodel
                 {
                     var hNewDriverInfo = new DriverInfo
                     {
+                        DeliveryTime = NewItemDate,
+                        DeliveryLocation = NewItemLocation,
                         Driver = NewItemName,
                         Note = NewItemNote
                     };
@@ -90,7 +94,7 @@ namespace DriverPlan.viewmodel
         public RelayCommand DeleteItemCommand { get; set; }
 
 
-        public Dictionary<DateTime, DriverPlanDayViewModel> AllDriverPlans
+        public SortedDictionary<DateTime, DriverPlanDayViewModel> AllDriverPlans
         {
             get => FAllDriverPlans;
             set
@@ -137,6 +141,24 @@ namespace DriverPlan.viewmodel
 
         public RelayCommand AddNewItemCommand { get; }
 
+        public int NewItemHour
+        {
+            get => NewItemDate.Hour;
+            set
+            {
+                NewItemDate = new DateTime(NewItemDate.Year, NewItemDate.Month, NewItemDate.Day, value, NewItemDate.Minute, 0);
+            }
+        }
+
+        public int NewItemMinute
+        {
+            get => NewItemDate.Minute;
+            set
+            {
+                NewItemDate = new DateTime(NewItemDate.Year, NewItemDate.Month, NewItemDate.Day, NewItemDate.Hour, value, 0);
+            }
+        }
+
         private void InitializeWithTestData()
         {
             DataRepository = new DataRepository();
@@ -160,9 +182,9 @@ namespace DriverPlan.viewmodel
         }
 
 
-        private Dictionary<DateTime, DriverPlanDayViewModel> GenerateDriverPlan()
+        private SortedDictionary<DateTime, DriverPlanDayViewModel> GenerateDriverPlan()
         {
-            var hAllDriverPlans = new Dictionary<DateTime, DriverPlanDayViewModel>();
+            var hAllDriverPlans = new SortedDictionary<DateTime, DriverPlanDayViewModel>();
             
             var hFirstEntryHour = DriverPlanEntries.Min(_ => _.DeliveryDate.Hour);
             var hLastEntryHour = DriverPlanEntries.Max(_ => _.DeliveryDate.Hour);
@@ -186,6 +208,7 @@ namespace DriverPlan.viewmodel
             {
                 hAllDriverPlans.Add(hDriverPlanDay.Key, new DriverPlanDayViewModel(hDriverPlanDay.Value));
             }
+            
 
             return hAllDriverPlans;
         }

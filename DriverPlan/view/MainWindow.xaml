@@ -4,6 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodel="clr-namespace:DriverPlan.viewmodel"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:driverPlan="clr-namespace:DriverPlan"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.DataContext>
@@ -14,7 +16,7 @@
             <Border Width="200" Margin="0,1,5,1" BorderBrush="Gray" BorderThickness="1" Padding="2">
                 <StackPanel>
                     <WrapPanel>
-                        <TextBlock Text="{Binding DeliveryDate, StringFormat=hh:mm}" />
+                        <TextBlock Text="{Binding DeliveryDate, StringFormat=HH:mm}" />
                         <TextBlock Text="{Binding Driver}" Margin="10,0,0,0" TextWrapping="Wrap" />
                     </WrapPanel>
                     <TextBlock Text="{Binding DeliveryLocation}" TextWrapping="Wrap" />
@@ -59,9 +61,7 @@
 
 
         </DataTemplate>
-
-
-    </Window.Resources>
+      </Window.Resources>
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -94,8 +94,30 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Row="0" Grid.Column="0" Padding="0,0,20,0" Text="Datum" />
-                        <TextBox Grid.Row="0" Grid.Column="1"
-                                 Text="{Binding NewItemDate, StringFormat=dd.MM.yyyy hh:mm}" Margin="0,0,0,5" Padding="1" />
+                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                            <DatePicker SelectedDate="{Binding NewItemDate, UpdateSourceTrigger=PropertyChanged}"></DatePicker>
+                            <TextBox >
+                                <TextBox.Text>
+                                    <Binding Path="NewItemHour"
+                                             UpdateSourceTrigger="PropertyChanged" >
+                                        <Binding.ValidationRules>
+                                            <driverPlan:ValueWithinRangeRule  Min="0" Max="23"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <TextBox >
+                                <TextBox.Text>
+                                    <Binding Path="NewItemMinute"
+                                             UpdateSourceTrigger="PropertyChanged" >
+                                        <Binding.ValidationRules>
+                                            <driverPlan:ValueWithinRangeRule  Min="0" Max="59"/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </StackPanel>
+                        
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Ort" />
                         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding NewItemLocation, Mode=TwoWay}" Margin="0,0,0,5" Padding="1" />
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Fahrer" />
@@ -111,12 +133,21 @@
                       ItemsSource="{Binding DriverPlanEntries}" CanUserDeleteRows="True" Height="200">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Fahrer" Binding="{Binding Driver}" />
-
-                    <DataGridTemplateColumn Header="Datum">
+                    <DataGridTemplateColumn Header="Datum" IsReadOnly="False">
                         <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBox Grid.Row="0" Grid.Column="1"
-                                         Text="{Binding DeliveryDate, StringFormat=dd.MM.yyyy hh:mm}" />
+                            <DataTemplate DataType="{x:Type viewmodel:DriverPlanEntryViewModel}">
+                                <DatePicker SelectedDate="{Binding DeliveryDate, UpdateSourceTrigger=PropertyChanged}"></DatePicker>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Uhrzeit" IsReadOnly="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type viewmodel:DriverPlanEntryViewModel}">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox Text="{Binding DeliveryDateHour, UpdateSourceTrigger=PropertyChanged, Delay=3000}"/>
+                                    <TextBox Text="{Binding DeliveryDateMinute, UpdateSourceTrigger=PropertyChanged, Delay=3000}"/>
+                                </StackPanel>
+                              
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
