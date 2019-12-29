@@ -9,7 +9,9 @@ namespace DriverPlan.viewmodel
     class DriverPlanEntryViewModel : BaseViewModel
     {
         private readonly DriverInfo FItem;
-        
+
+        public DriverInfo OriginalItem => FItem;
+
 
         public DriverPlanEntryViewModel(DriverInfo _FItem)
         {

@@ -10,6 +10,8 @@ namespace DriverPlan.model
 
     class DriverInfo : INotifyPropertyChanged
     {
+        private Guid FId = Guid.NewGuid();
+
         private string FDriver;
 
         private DateTime FDeliveryTime;
@@ -18,7 +20,7 @@ namespace DriverPlan.model
 
         private string FNote;
 
-        // ToDo: Internal Key
+        public Guid Id => FId;
 
         public string Driver
         {

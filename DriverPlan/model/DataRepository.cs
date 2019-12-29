@@ -11,9 +11,11 @@ namespace DriverPlan.model
             DriverInfos = new List<DriverInfo>();
         }
 
-        public List<DriverInfo> DriverInfos { get; private set; }
+        public List<DriverInfo> DriverInfos { get; set; }
 
         public event EventHandler DataChanged;
+
+        public event EventHandler ItemRemoved;
 
         public void Initialize(IImporter _Importer)
         {
@@ -45,7 +47,21 @@ namespace DriverPlan.model
             _DriverInfo.PropertyChanged += OnItemChanged;
             DriverInfos.Add(_DriverInfo);
             OnDataChanged();
-            
+        }
+
+        public void Remove(Guid _Id)
+        {
+
+
+            var hIndexToDelete = DriverInfos.FindIndex(_Info => _Info.Id == _Id);
+            DriverInfos.RemoveAt(hIndexToDelete);
+
+            OnItemRemoved();
+        }
+
+        protected virtual void OnItemRemoved()
+        {
+            ItemRemoved?.Invoke(this, EventArgs.Empty);
         }
     }
 }

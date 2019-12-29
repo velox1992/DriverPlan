@@ -11,63 +11,14 @@
     <Window.DataContext>
         <viewmodel:MainWindowViewModel />
     </Window.DataContext>
-    <Window.Resources>
-        <DataTemplate x:Key="DriverPlanEntryTemplate" DataType="viewmodel:DriverPlanEntryViewModel">
-            <Border Width="200" Margin="0,1,5,1" BorderBrush="Gray" BorderThickness="1" Padding="2">
-                <StackPanel>
-                    <WrapPanel>
-                        <TextBlock Text="{Binding DeliveryDate, StringFormat=HH:mm}" />
-                        <TextBlock Text="{Binding Driver}" Margin="10,0,0,0" TextWrapping="Wrap" />
-                    </WrapPanel>
-                    <TextBlock Text="{Binding DeliveryLocation}" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding Note}" TextWrapping="Wrap" />
-                </StackPanel>
 
-            </Border>
-        </DataTemplate>
-
-        <DataTemplate x:Key="DriverPlanEntriesOfDay" DataType="viewmodel:DriverPlanDayViewModel">
-
-            <ItemsControl ItemsSource="{Binding DriverPlanByHour}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Vertical" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="Black" BorderThickness="0.1">
-                            <StackPanel Orientation="Horizontal">
-                                <!-- Stunde -->
-                                <Border Width="30" Background="PaleGreen">
-                                    <Label Content="{Binding Key}" />
-                                </Border>
-                                <!-- Einträge -->
-                                <ItemsControl ItemsSource="{Binding Value}"
-                                              ItemTemplate="{StaticResource DriverPlanEntryTemplate}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal" />
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                </ItemsControl>
-
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-
-            </ItemsControl>
-
-
-        </DataTemplate>
-      </Window.Resources>
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Neu" Command="{Binding CreateNewPlanCommand}" />
             <MenuItem Header="Öffnen" Command="{Binding LoadPlanCommand}" />
             <MenuItem Header="Speichern" Command="{Binding SavePlanCommand}" />
+            <MenuItem Header="Drucken" Click="MenuItem_OnClick"/>
         </Menu>
 
         <Grid Margin="15">
@@ -130,7 +81,7 @@
                 
             </StackPanel>
             <DataGrid Grid.Row="0" Grid.Column="1" AutoGenerateColumns="False" ColumnWidth="*" VerticalScrollBarVisibility="Visible"
-                      ItemsSource="{Binding DriverPlanEntries}" CanUserDeleteRows="True" Height="200">
+                      ItemsSource="{Binding DriverPlanEntries}" CanUserDeleteRows="True" Height="200" KeyUp="DriverPlanEntriesGridOnKeyUp">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Fahrer" Binding="{Binding Driver}" />
                     <DataGridTemplateColumn Header="Datum" IsReadOnly="False">
@@ -157,30 +108,7 @@
             </DataGrid>
             <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Height="500" Margin="5">
             <ScrollViewer  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding AllDriverPlans}"  >
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-
-                        <Border BorderBrush="Black" BorderThickness="0.1" >
-                            <StackPanel>
-                                        <TextBlock Text="{Binding Path=Key, StringFormat=ddd dd.MM.yyyy}" Padding="5,3,0,3" Background="LightGray"/>
-                                        <ContentPresenter ContentTemplate="{StaticResource DriverPlanEntriesOfDay}"
-                                                  Content="{Binding Value}" 
-                                                  Margin="5"/>
-
-                            </StackPanel>
-                        </Border>
-
-                    </DataTemplate>
-
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                    <driverPlan:DriverSchedule  x:Name="DriverPlanScheduleControl"  />
 </ScrollViewer>
             </Grid>
 

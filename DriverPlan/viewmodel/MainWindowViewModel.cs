@@ -16,7 +16,6 @@ namespace DriverPlan.viewmodel
     {
         private SortedDictionary<DateTime, DriverPlanDayViewModel> FAllDriverPlans;
         private ObservableCollection<DriverPlanEntryViewModel> FDriverPlanEntries;
-        private int FNewItemHour;
 
         public MainWindowViewModel()
         {
@@ -26,12 +25,11 @@ namespace DriverPlan.viewmodel
 
             InitializeWithTestData();
 
-
+            
             CreateNewPlanCommand = new RelayCommand(
                 _Parameter =>
                 {
-                    DataRepository = new DataRepository();
-                    DataRepository.DataChanged += DataRepositoryOnDataChanged;
+                    AttachDataRepository();
                 },
                 _Parameter => true);
 
@@ -45,18 +43,17 @@ namespace DriverPlan.viewmodel
 
                     var hFileName = hOpenFileDialog.FileName;
 
-                    DataRepository = new DataRepository();
-                    DataRepository.DataChanged += DataRepositoryOnDataChanged;
+                    AttachDataRepository();
 
                     var hImporter = new JsonImporter(hFileName);
-                    DataRepository.Initialize(hImporter);
+                    FDataRepository.Initialize(hImporter);
                 },
                 _Parameter => true);
 
             SavePlanCommand = new RelayCommand(
                 _Parameter =>
                 {
-                    if (DataRepository is null) return;
+                    if (FDataRepository is null) return;
 
                     var hSaveFileDialog = new SaveFileDialog();
                     var hDialogResult = hSaveFileDialog.ShowDialog();
@@ -66,7 +63,7 @@ namespace DriverPlan.viewmodel
                     var hFileName = hSaveFileDialog.FileName;
 
                     var hExporter = new JsonExporter(hFileName);
-                    DataRepository.SaveData(hExporter);
+                    FDataRepository.SaveData(hExporter);
                 },
                 _Parameter => true);
 
@@ -80,16 +77,45 @@ namespace DriverPlan.viewmodel
                         Driver = NewItemName,
                         Note = NewItemNote
                     };
-                    DataRepository?.AddNewItem(hNewDriverInfo);
+                    FDataRepository?.AddNewItem(hNewDriverInfo);
                 },
                 _Parameter => true);
 
             DeleteItemCommand = new RelayCommand(
                 _Parameter =>
                 {
-                    Console.WriteLine("Test");
+                    if (_Parameter is DriverPlanEntryViewModel hDriverPlanEntry)
+                    {
+                        FDataRepository.Remove(hDriverPlanEntry.OriginalItem.Id);
+                    }
                 }, _Parameter => true);
         }
+
+
+        private void DetachDataRepository()
+        {
+            if (FDataRepository == null) return;
+
+            FDataRepository.DataChanged -= DataRepositoryOnDataChanged;
+            FDataRepository.ItemRemoved -= DataRepositoryItemRemoved;
+        }
+
+        private void AttachDataRepository()
+        {
+            DetachDataRepository();
+
+            var hDataRepository = new DataRepository();
+            hDataRepository.DataChanged += DataRepositoryOnDataChanged;
+            hDataRepository.ItemRemoved += DataRepositoryItemRemoved;
+            
+            FDataRepository = hDataRepository;
+        }
+
+        private void DataRepositoryItemRemoved(object? _Sender, EventArgs _E)
+        {
+            AllDriverPlans = GenerateDriverPlan();
+        }
+
 
         public RelayCommand DeleteItemCommand { get; set; }
 
@@ -135,7 +161,7 @@ namespace DriverPlan.viewmodel
         }
 
 
-        private DataRepository DataRepository { get; set; }
+        private DataRepository FDataRepository { get; set; }
 
         public RelayCommand LoadPlanCommand { get; }
 
@@ -161,18 +187,17 @@ namespace DriverPlan.viewmodel
 
         private void InitializeWithTestData()
         {
-            DataRepository = new DataRepository();
-            DataRepository.DataChanged += DataRepositoryOnDataChanged;
+            AttachDataRepository();
 
             var hImporter = new TestDataImporter();
-            DataRepository.Initialize(hImporter);
+            FDataRepository.Initialize(hImporter);
         }
 
         private void DataRepositoryOnDataChanged(object _Sender, EventArgs _E)
         {
             DriverPlanEntries.Clear();
 
-            DataRepository.DriverInfos.ForEach(_ =>
+            FDataRepository.DriverInfos.ForEach(_ =>
             {
                 var hNewDriverPlanEntryViewModel = new DriverPlanEntryViewModel(_);
                 DriverPlanEntries.Add(hNewDriverPlanEntryViewModel);
