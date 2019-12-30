@@ -49,10 +49,9 @@ namespace DriverPlan.model
             OnDataChanged();
         }
 
+
         public void Remove(Guid _Id)
         {
-
-
             var hIndexToDelete = DriverInfos.FindIndex(_Info => _Info.Id == _Id);
             DriverInfos.RemoveAt(hIndexToDelete);
 

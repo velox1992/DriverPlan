@@ -87,11 +87,8 @@ namespace DriverPlan
                 foreach (var hDriverPlanEntry in hDriverPlanEntries)
                 {
                     hViewModel.DeleteItemCommand.Execute(hDriverPlanEntry);
-                   
                 }
-                
             }
-            
         }
     }
 }

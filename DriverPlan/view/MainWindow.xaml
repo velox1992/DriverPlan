@@ -7,7 +7,7 @@
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:driverPlan="clr-namespace:DriverPlan"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Fahrerplan" Height="450" Width="800">
     <Window.DataContext>
         <viewmodel:MainWindowViewModel />
     </Window.DataContext>
@@ -81,7 +81,7 @@
                 
             </StackPanel>
             <DataGrid Grid.Row="0" Grid.Column="1" AutoGenerateColumns="False" ColumnWidth="*" VerticalScrollBarVisibility="Visible"
-                      ItemsSource="{Binding DriverPlanEntries}" CanUserDeleteRows="True" Height="200" KeyUp="DriverPlanEntriesGridOnKeyUp">
+                      ItemsSource="{Binding DriverPlanEntries}" CanUserDeleteRows="True" Height="200" KeyDown="DriverPlanEntriesGridOnKeyUp">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Fahrer" Binding="{Binding Driver}" />
                     <DataGridTemplateColumn Header="Datum" IsReadOnly="False">
@@ -95,8 +95,29 @@
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate DataType="{x:Type viewmodel:DriverPlanEntryViewModel}">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBox Text="{Binding DeliveryDateHour, UpdateSourceTrigger=PropertyChanged, Delay=3000}"/>
-                                    <TextBox Text="{Binding DeliveryDateMinute, UpdateSourceTrigger=PropertyChanged, Delay=3000}"/>
+                                    <TextBox>
+                                        <TextBox.Text>
+                                            <Binding Path="DeliveryDateHour"
+                                                     UpdateSourceTrigger="PropertyChanged"
+                                                     Delay="3000">
+                                                <Binding.ValidationRules>
+                                                    <driverPlan:ValueWithinRangeRule  Min="0" Max="23"/>
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <TextBox >
+                                            <TextBox.Text>
+                                            <Binding Path="DeliveryDateMinute"
+                                                         UpdateSourceTrigger="PropertyChanged" 
+                                                         Delay="3000">
+                                                    <Binding.ValidationRules>
+                                                        <driverPlan:ValueWithinRangeRule  Min="0" Max="59"/>
+                                                    </Binding.ValidationRules>
+                                                </Binding>
+                                            </TextBox.Text>
+
+                                    </TextBox>
                                 </StackPanel>
                               
                             </DataTemplate>

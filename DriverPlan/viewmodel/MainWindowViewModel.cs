@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -12,7 +11,7 @@ using Microsoft.Win32;
 
 namespace DriverPlan.viewmodel
 {
-    class MainWindowViewModel : BaseViewModel
+    internal class MainWindowViewModel : BaseViewModel
     {
         private SortedDictionary<DateTime, DriverPlanDayViewModel> FAllDriverPlans;
         private ObservableCollection<DriverPlanEntryViewModel> FDriverPlanEntries;
@@ -23,13 +22,13 @@ namespace DriverPlan.viewmodel
             FDriverPlanEntries = new ObservableCollection<DriverPlanEntryViewModel>();
 
 
-            InitializeWithTestData();
-
-            
             CreateNewPlanCommand = new RelayCommand(
                 _Parameter =>
                 {
                     AttachDataRepository();
+                    DriverPlanEntries = new ObservableCollection<DriverPlanEntryViewModel>();
+                    AllDriverPlans = new SortedDictionary<DateTime, DriverPlanDayViewModel>();
+
                 },
                 _Parameter => true);
 
@@ -85,35 +84,8 @@ namespace DriverPlan.viewmodel
                 _Parameter =>
                 {
                     if (_Parameter is DriverPlanEntryViewModel hDriverPlanEntry)
-                    {
                         FDataRepository.Remove(hDriverPlanEntry.OriginalItem.Id);
-                    }
                 }, _Parameter => true);
-        }
-
-
-        private void DetachDataRepository()
-        {
-            if (FDataRepository == null) return;
-
-            FDataRepository.DataChanged -= DataRepositoryOnDataChanged;
-            FDataRepository.ItemRemoved -= DataRepositoryItemRemoved;
-        }
-
-        private void AttachDataRepository()
-        {
-            DetachDataRepository();
-
-            var hDataRepository = new DataRepository();
-            hDataRepository.DataChanged += DataRepositoryOnDataChanged;
-            hDataRepository.ItemRemoved += DataRepositoryItemRemoved;
-            
-            FDataRepository = hDataRepository;
-        }
-
-        private void DataRepositoryItemRemoved(object? _Sender, EventArgs _E)
-        {
-            AllDriverPlans = GenerateDriverPlan();
         }
 
 
@@ -170,19 +142,40 @@ namespace DriverPlan.viewmodel
         public int NewItemHour
         {
             get => NewItemDate.Hour;
-            set
-            {
-                NewItemDate = new DateTime(NewItemDate.Year, NewItemDate.Month, NewItemDate.Day, value, NewItemDate.Minute, 0);
-            }
+            set => NewItemDate = new DateTime(NewItemDate.Year, NewItemDate.Month, NewItemDate.Day, value,
+                NewItemDate.Minute, 0);
         }
 
         public int NewItemMinute
         {
             get => NewItemDate.Minute;
-            set
-            {
-                NewItemDate = new DateTime(NewItemDate.Year, NewItemDate.Month, NewItemDate.Day, NewItemDate.Hour, value, 0);
-            }
+            set => NewItemDate = new DateTime(NewItemDate.Year, NewItemDate.Month, NewItemDate.Day, NewItemDate.Hour,
+                value, 0);
+        }
+
+
+        private void DetachDataRepository()
+        {
+            if (FDataRepository == null) return;
+
+            FDataRepository.DataChanged -= DataRepositoryOnDataChanged;
+            FDataRepository.ItemRemoved -= DataRepositoryItemRemoved;
+        }
+
+        private void AttachDataRepository()
+        {
+            DetachDataRepository();
+
+            var hDataRepository = new DataRepository();
+            hDataRepository.DataChanged += DataRepositoryOnDataChanged;
+            hDataRepository.ItemRemoved += DataRepositoryItemRemoved;
+
+            FDataRepository = hDataRepository;
+        }
+
+        private void DataRepositoryItemRemoved(object? _Sender, EventArgs _E)
+        {
+            AllDriverPlans = GenerateDriverPlan();
         }
 
         private void InitializeWithTestData()
@@ -195,7 +188,7 @@ namespace DriverPlan.viewmodel
 
         private void DataRepositoryOnDataChanged(object _Sender, EventArgs _E)
         {
-            DriverPlanEntries.Clear();
+             DriverPlanEntries.Clear();
 
             FDataRepository.DriverInfos.ForEach(_ =>
             {
@@ -210,7 +203,7 @@ namespace DriverPlan.viewmodel
         private SortedDictionary<DateTime, DriverPlanDayViewModel> GenerateDriverPlan()
         {
             var hAllDriverPlans = new SortedDictionary<DateTime, DriverPlanDayViewModel>();
-            
+
             var hFirstEntryHour = DriverPlanEntries.Min(_ => _.DeliveryDate.Hour);
             var hLastEntryHour = DriverPlanEntries.Max(_ => _.DeliveryDate.Hour);
 
@@ -220,20 +213,15 @@ namespace DriverPlan.viewmodel
             {
                 var hDeliveryDate = hDriverPlanEntryViewModel.DeliveryDate.Date;
                 if (hDriverPlansByDay.ContainsKey(hDeliveryDate))
-                {
                     hDriverPlansByDay[hDeliveryDate].Add(hDriverPlanEntryViewModel);
-                }
                 else
-                {
-                    hDriverPlansByDay.Add(hDeliveryDate, new List<DriverPlanEntryViewModel> { hDriverPlanEntryViewModel });
-                }
+                    hDriverPlansByDay.Add(hDeliveryDate,
+                        new List<DriverPlanEntryViewModel> {hDriverPlanEntryViewModel});
             }
 
             foreach (var hDriverPlanDay in hDriverPlansByDay)
-            {
                 hAllDriverPlans.Add(hDriverPlanDay.Key, new DriverPlanDayViewModel(hDriverPlanDay.Value));
-            }
-            
+
 
             return hAllDriverPlans;
         }
